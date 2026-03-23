@@ -1,0 +1,7 @@
+__pycache__/
+*.py[cod]
+.DS_Store
+
+causality_project/__pycache__/
+causality_project/methods/__pycache__/
+causality_project/utils/__pycache__/
