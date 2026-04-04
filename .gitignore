@@ -2,8 +2,7 @@ __pycache__/
 *.py[cod]
 .DS_Store
 
-causality_project/**/__pycache__/
-causality_project/hydra_runs/
-causality_project/mlruns/
-causality_project/background_logs/
-causality_project/output/__plot_smoke__/
+hydra_runs/
+mlruns/
+background_logs/
+output/__plot_smoke__/

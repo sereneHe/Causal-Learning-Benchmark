@@ -23,7 +23,7 @@ This project is a cleaned-up, runnable Python pipeline extracted from `scripts/S
 ## Current Structure
 
 ```text
-causality_project/
+.
 ├── README.md
 ├── background_logs/
 ├── conf/
@@ -137,7 +137,7 @@ Typical local setup:
 Default run:
 
 ```bash
-cd /Users/xiaoyuhe/Causal-Methods/krebcycle/causality_project
+cd /Users/xiaoyuhe/Causal-Methods/krebcycle
 python3 scripts/main.py
 ```
 
