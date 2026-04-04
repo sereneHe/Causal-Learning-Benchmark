@@ -1,0 +1,5 @@
+name: lightweight
+methods:
+  - Direct-LiNGAM
+time_limit: 300
+skip_existing: false

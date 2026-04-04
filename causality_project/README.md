@@ -1,84 +1,230 @@
 # causality_project
 
-This project is a cleaned-up Python version of `SereneHE_gCastle_project.ipynb`.
+This project is a cleaned-up, runnable Python pipeline extracted from `scripts/SereneHE_gCastle_project.ipynb`.
 
-## Structure
+## Overview
+
+- The notebook method set contains 22 methods:
+  `PC-Stable`, `PC-Parallel`, `ANM-NCPOLR`, `ANM-GPR`, `ANM-GPR-Kernel`,
+  `Direct-LiNGAM`, `ICA-LiNGAM`, `PNL`, `GES`, `ExMAG`, `ExDBN`, `DyNotear`,
+  `Notear-Linear`, `Notear-NonLinear`, `Notear-Lowrank`, `DAG-GNN`, `GOLEM`,
+  `GraNDAG`, `MCSL`, `GAE`, `RL`, `CORL`.
+- gCastle source is vendored under `scripts/methods/gcastle/` from commit
+  `f96c9b52d5e38c74c14969dbf6c48b380f3c3dab`.
+- Notebook-local external methods are vendored under
+  `scripts/methods/project_bestdagsolverintheworld/`.
+- Hydra is the main entrypoint format and MLflow is enabled by default.
+
+## Evaluation
+
+- Metrics include `F-score`, `SHD`, `SID` when provided, `FDR`, `TPR`, `FPR`, `nnz`, `Precision`, and `Recall`.
+- Heatmaps compare `est_graph` and `truth_graph`.
+
+## Current Structure
 
 ```text
 causality_project/
-├── main.py
-├── run_pipeline.py
-├── methods/
-│   ├── __init__.py
-│   ├── method_runner.py
-│   └── post_processing.py
+├── README.md
+├── background_logs/
+├── conf/
+│   ├── config.yaml
+│   ├── config-cluster.yaml
+│   ├── problem/
+│   │   ├── krebs_cycle_1.yaml
+│   │   ├── krebs_cycle_3.yaml
+│   │   ├── krebs_cycle_normalised_1.yaml
+│   │   └── krebs_cycle_normalised_3.yaml
+│   ├── solver/
+│   │   ├── default.yaml
+│   │   ├── gcastle_all_17.yaml
+│   │   ├── lightweight.yaml
+│   │   ├── local_plus_corl.yaml
+│   │   └── notebook_all.yaml
+│   └── hydra/
+│       └── launcher/
+│           └── configured_submitit_slurm.yaml
 ├── data/
 │   ├── Krebs_Cycle_1_TS/
-│   ├── Krebs_Cycle_Normalized_1_TS/
 │   ├── Krebs_Cycle_3_TS/
-│   └── Krebs_Cycle_Normalized_3_TS/
-├── utils/
-│   ├── data_loader.py
-│   └── timer.py
-└── output/
-    └── Results_Krebs_Cycle_1/
-        ├── adj_matrices/
-        ├── score/
-        ├── heatmap/
-        ├── merged_scores_Krebs_Cycle_1.csv
-        ├── sid_Krebs_Cycle_1.csv
-        └── output_Krebs_Cycle_1.csv
+│   ├── Krebs_Cycle_Normalised_1_TS/
+│   ├── Krebs_Cycle_Normalised_3_TS/
+│   └── true_graph.npz
+├── hydra_runs/
+├── mlruns/
+├── output/
+│   ├── Results_Krebs_Cycle_1/
+│   └── __plot_smoke__/
+└── scripts/
+    ├── SereneHE_gCastle_project.ipynb
+    ├── main.py
+    ├── run_pipeline.py
+    ├── plot.py
+    ├── methods/
+    │   ├── method_runner.py
+    │   ├── post_processing.py
+    │   ├── gcastle/
+    │   └── project_bestdagsolverintheworld/
+    └── utils/
+        ├── data_loader.py
+        ├── mlflow_logger.py
+        └── timer.py
 ```
 
-## What was moved out of the notebook
+## Pipeline Layout
 
-- Data loading and standardization: `utils/data_loader.py`
-- Method dispatching: `methods/method_runner.py`
-- Metrics, merging, and plotting: `methods/post_processing.py`
-- Pipeline orchestration: `run_pipeline.py`
-- CLI entrypoint: `main.py`
+The notebook logic is split into these runtime pieces:
 
-## Expected data layout
+- `scripts/main.py`: Hydra entrypoint.
+- `scripts/run_pipeline.py`: dataset loading, method execution, timeout handling, metrics, and artifact writing.
+- `scripts/utils/data_loader.py`: `Real_Data_Standardization`.
+- `scripts/methods/method_runner.py`: routes method names to wrappers.
+- `scripts/methods/post_processing.py`: score CSVs, merged outputs, and heatmaps.
+- `scripts/plot.py`: notebook-derived `circle_barplot`, `barplot`, and `heatmap` helpers.
+- `scripts/utils/mlflow_logger.py`: MLflow run and artifact logging.
 
-Put Krebs data under `data/` in one of these forms:
+## Method Sources
 
-- `data/<dataset>.npz` with `x` and `y`
-- `data/<dataset>.csv` with `data/true_graph.csv`
-- `data/<dataset>.tar.gz`
-- `data/<dataset>_TS/*.tsv` with `data/true_graph.npz` nearby
+### gCastle wrappers
 
-Example:
+Local wrappers in `scripts/methods/` expose vendored gCastle implementations for:
 
-```text
-data/
-├── Krebs_Cycle_1_TS/
-│   ├── sample_1.tsv
-│   ├── sample_2.tsv
-│   └── ...
-└── true_graph.npz
-```
+- `PC-Stable`
+- `PC-Parallel`
+- `ANM-GPR`
+- `ANM-GPR-Kernel`
+- `Direct-LiNGAM`
+- `ICA-LiNGAM`
+- `PNL`
+- `GES`
+- `Notear-Linear`
+- `Notear-NonLinear`
+- `Notear-Lowrank`
+- `DAG-GNN`
+- `GOLEM`
+- `GraNDAG`
+- `MCSL`
+- `GAE`
+- `RL`
+- `CORL`
 
-Current local setup:
+### Notebook-local methods
 
-- Krebs data already exists under `/Users/xiaoyuhe/Downloads/KrebsCycle`
-- `main.py` now uses that path as the default `--data-root` when it exists
+Project-local implementations or vendored external sources are used for:
 
-## Run
+- `ANM-NCPOLR`
+- `ExMAG`
+- `ExDBN`
+- `DyNotear`
+
+`ExDAG` is also wired in `local_plus_corl`, but it is not part of the original 22-method `notebook_all` set.
+
+## Data Layout
+
+The loader accepts these forms under `paths.data_root`:
+
+- `<dataset>.npz` with `x` and `y`
+- `<dataset>.csv` with `true_graph.csv`
+- `<dataset>.tar.gz`
+- `<dataset>_TS/*.tsv` with `true_graph.npz`
+
+Typical local setup:
+
+- `conf/config.yaml` points `paths.data_root` to `/Users/xiaoyuhe/Downloads/KrebsCycle`
+- repo-local sample data also exists under `data/`
+
+## Hydra Usage
+
+Default run:
 
 ```bash
 cd /Users/xiaoyuhe/Causal-Methods/krebcycle/causality_project
-python3 main.py --dataset-name Krebs_Cycle_1 --methods ExDBN
+python3 scripts/main.py
 ```
 
-Run a wider method set:
+Run `Krebs_Cycle_3`:
 
 ```bash
-python3 main.py \
-  --dataset-name Krebs_Cycle_3 \
-  --methods PC-Stable PC-Parallel Direct-LiNGAM ICA-LiNGAM GES ExMAG ExDBN
+python3 scripts/main.py problem=krebs_cycle_3
 ```
+
+Run `Krebs_Cycle_Normalised_3`:
+
+```bash
+python3 scripts/main.py problem=krebs_cycle_normalised_3
+```
+
+Run the 17-method gCastle set:
+
+```bash
+python3 scripts/main.py solver=gcastle_all_17
+```
+
+Run all 22 notebook methods:
+
+```bash
+python3 scripts/main.py solver=notebook_all
+```
+
+Run notebook-local methods plus `CORL` and `ExDAG`:
+
+```bash
+python3 scripts/main.py solver=local_plus_corl
+```
+
+Use a custom subset:
+
+```bash
+python3 scripts/main.py \
+  'solver.methods=[PC-Stable,Direct-LiNGAM,ExDBN]' \
+  solver.time_limit=600
+```
+
+Use repo-local data instead of Downloads:
+
+```bash
+python3 scripts/main.py \
+  paths.data_root='${hydra:runtime.cwd}/data' \
+  mlflow.enabled=false
+```
+
+Multirun sweep:
+
+```bash
+python3 scripts/main.py -m \
+  problem=krebs_cycle_1,krebs_cycle_3 \
+  solver=lightweight \
+  mlflow.enabled=false
+```
+
+Cluster config:
+
+```bash
+python3 scripts/main.py --config-name config-cluster
+```
+
+## Outputs
+
+- Hydra run metadata: `hydra_runs/<dataset>/<timestamp>/`
+- MLflow tracking: `mlruns/`
+- Method outputs: `output/Results_<dataset>/`
+- Background process logs: `background_logs/`
+
+Inside each `Results_<dataset>/` folder:
+
+- `adj_matrices/`
+- `score/`
+- `heatmap/`
+- `merged_scores_<dataset>.csv`
+- `sid_<dataset>.csv` if available
+- `output_<dataset>.csv`
 
 ## Notes
 
-- `ExMAG`, `ExDBN`, `DyNotear`, and ANM variants still depend on external modules that were only referenced in the notebook. The new code now fails fast with a clear import or implementation error instead of silently relying on Colab state.
-- `sid_<dataset>.csv` is optional. If you have a precomputed SID file, pass it with `--sid-file`.
+- `config.yaml` uses Hydra `joblib` locally.
+- `config-cluster.yaml` switches Hydra to `configured_submitit_slurm`.
+- MLflow is enabled by default. Disable it with `mlflow.enabled=false`.
+- `solver=notebook_all` is the notebook 22-method set.
+- `solver=local_plus_corl` is a project convenience set and includes `ExDAG`.
+- `ExMAG`, `ExDBN`, `ExDAG`, and `DyNotear` prefer the vendored copy under `scripts/methods/project_bestdagsolverintheworld/`.
+- `ExDAG` currently still needs the external `dagma` Python package at runtime.
+- There is no formal `pytest` suite in this project yet; validation is currently based on config expansion, import checks, `py_compile`, and smoke runs.

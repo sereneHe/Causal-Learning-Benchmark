@@ -1,1 +1,9 @@
 Method,Category,FDR,TPR,FPR,SHD,nnz,Precision,Recall,F-score,RuntimeSeconds,SID
+PC-Stable,Constraint-based,,,,,,,,,,
+PC-Parallel,Constraint-based,,,,,,,,,,
+ANM-NCPOLR,Function-based,,,,,,,,,,
+PNL,Function-based,,,,,,,,,,
+GES,Score-based,,,,,,,,,,
+ExMAG,Score-based,,,,,,,,,,
+ExDBN,Score-based,,,,,,,,,,
+DyNotear,Score-based,,,,,,,,,,
