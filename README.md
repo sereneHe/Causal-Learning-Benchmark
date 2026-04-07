@@ -59,13 +59,13 @@ This project is a cleaned-up, runnable Python pipeline extracted from `scripts/S
     ├── main.py
     ├── run_pipeline.py
     ├── plot.py
+    ├── data_loader.py
     ├── methods/
     │   ├── method_runner.py
     │   ├── post_processing.py
     │   ├── gcastle/
     │   └── project_bestdagsolverintheworld/
     └── utils/
-        ├── data_loader.py
         ├── mlflow_logger.py
         └── timer.py
 ```
@@ -76,7 +76,7 @@ The notebook logic is split into these runtime pieces:
 
 - `scripts/main.py`: Hydra entrypoint.
 - `scripts/run_pipeline.py`: dataset loading, method execution, timeout handling, metrics, and artifact writing.
-- `scripts/utils/data_loader.py`: `Real_Data_Standardization`.
+- `scripts/data_loader.py`: `Real_Data_Standardization`.
 - `scripts/methods/method_runner.py`: routes method names to wrappers.
 - `scripts/methods/post_processing.py`: score CSVs, merged outputs, and heatmaps.
 - `scripts/plot.py`: notebook-derived `circle_barplot`, `barplot`, and `heatmap` helpers.

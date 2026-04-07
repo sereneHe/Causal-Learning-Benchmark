@@ -1,6 +1,9 @@
 from __future__ import annotations
 
 import concurrent.futures
+import multiprocessing
+import queue
+import traceback
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Sequence
@@ -16,9 +19,72 @@ from methods.post_processing import (
     save_heatmap,
     save_metrics,
 )
-from utils.data_loader import Real_Data_Standardization
+from data_loader import Real_Data_Standardization
 from utils.mlflow_logger import MlflowLogger
 from utils.timer import Timer
+
+
+SUBPROCESS_TIMEOUT_METHODS = {"ExDBN"}
+
+
+def _run_method_in_subprocess(
+    context: MethodContext,
+    result_queue: multiprocessing.queues.Queue,
+) -> None:
+    try:
+        result_queue.put(("ok", run_method(context)))
+    except Exception as exc:  # pragma: no cover - child process path
+        result_queue.put(("error", str(exc), traceback.format_exc()))
+
+
+def _run_method_with_process_timeout(
+    context: MethodContext,
+    timeout_seconds: int,
+) -> np.ndarray | None:
+    mp_ctx = multiprocessing.get_context("spawn")
+    result_queue = mp_ctx.Queue()
+    process = mp_ctx.Process(
+        target=_run_method_in_subprocess,
+        args=(context, result_queue),
+        daemon=False,
+    )
+    process.start()
+    process.join(timeout_seconds)
+
+    if process.is_alive():
+        process.terminate()
+        process.join(5)
+        if process.is_alive():
+            process.kill()
+            process.join(5)
+        print(
+            f"[TIMEOUT] {context.method} exceeded {timeout_seconds}s. "
+            f"Terminated subprocess pid={process.pid}."
+        )
+        return None
+
+    try:
+        payload = result_queue.get_nowait()
+    except queue.Empty:
+        exit_code = process.exitcode
+        print(
+            f"[FAIL] {context.method}: subprocess exited without returning a result "
+            f"(exitcode={exit_code})."
+        )
+        return None
+    finally:
+        result_queue.close()
+        result_queue.join_thread()
+
+    status, *data = payload
+    if status == "ok":
+        return np.asarray(data[0])
+
+    error_message, tb_text = data
+    print(f"[FAIL] {context.method}: {error_message}")
+    if tb_text:
+        print(tb_text)
+    return None
 
 
 @dataclass
@@ -149,6 +215,9 @@ class CausalPipeline:
             self.mlflow.end_run()
 
     def _run_with_timeout(self, context: MethodContext) -> np.ndarray | None:
+        if context.method in SUBPROCESS_TIMEOUT_METHODS:
+            return _run_method_with_process_timeout(context, self.config.time_limit)
+
         with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
             future = executor.submit(run_method, context)
             try:
