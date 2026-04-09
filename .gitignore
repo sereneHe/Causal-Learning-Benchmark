@@ -2,8 +2,10 @@ __pycache__/
 *.py[cod]
 .DS_Store
 
+archive/
+artifacts/
+background_logs/
 hydra_runs/
 mlruns/
-background_logs/
-output/__plot_smoke__/
-causality_project/
+output/
+.gitignore

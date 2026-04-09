@@ -1,0 +1,27 @@
+# Unified requirements summary
+#
+# Core Python dependencies used by the benchmark pipeline:
+hydra-core
+omegaconf
+mlflow
+numpy
+pandas
+scipy
+scikit-learn
+matplotlib
+seaborn
+networkx
+joblib
+tqdm
+torch
+
+# Optional method-specific Python dependencies:
+# gurobipy
+# python-igraph
+# dagma
+# IPython
+
+# Java/system requirement for the Krebs data generator:
+# brew install openjdk
+# export PATH="/usr/local/opt/openjdk/bin:$PATH"
+# export JAVA_HOME="/usr/local/opt/openjdk/libexec/openjdk.jdk/Contents/Home"

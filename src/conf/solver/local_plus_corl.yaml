@@ -1,0 +1,10 @@
+name: local_plus_corl
+methods:
+  - ExMAG
+  - ExDBN
+  - ExDAG
+  - DyNotear
+  - ANM-NCPOLR
+  - CORL
+time_limit: 3600
+skip_existing: false

@@ -1,5 +1,0 @@
-name: default
-methods:
-  - ExDBN
-time_limit: 3600
-skip_existing: false

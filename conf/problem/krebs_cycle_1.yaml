@@ -1,8 +1,0 @@
-name: krebs_cycle_1
-dataset_name: Krebs_Cycle_1
-sample_index: 0
-time_start: 100
-time_end: 200
-single_time_step: null
-anm_features: 3
-anm_samples: 8

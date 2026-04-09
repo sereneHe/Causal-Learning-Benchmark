@@ -1,0 +1,7 @@
+defaults:
+  - submitit_slurm
+
+mem_per_cpu: 16G
+cpus_per_task: 4
+partition: amd
+timeout_min: 1440

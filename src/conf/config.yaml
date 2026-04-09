@@ -1,0 +1,37 @@
+experiment: CAUSALITY_PROJECT
+
+defaults:
+  - solver: default
+  - problem: krebs_cycle_1
+  #- problem: krebs_cycle_3
+  #- problem: krebs_cycle_normalised_1
+  #- problem: krebs_cycle_normalised_3
+
+  - override hydra/launcher: joblib
+  - _self_
+
+paths:
+  data_root: /Users/xiaoyuhe/Causal-Methods/krebcycle/data
+  output_root: ${hydra:runtime.cwd}/output
+  sid_file: null
+
+mlflow:
+  enabled: true
+  tracking_uri: file://${hydra:runtime.cwd}/mlruns
+  experiment_name: ${experiment}
+  run_name: ${problem.dataset_name}
+  nested_method_runs: true
+  log_artifacts: true
+  tags:
+    project: causality_project
+    runner: hydra
+
+hydra:
+  launcher:
+    n_jobs: 1
+    prefer: processes
+  run:
+    dir: ${hydra:runtime.cwd}/hydra_runs/${problem.dataset_name}/${now:%Y-%m-%d_%H-%M-%S}
+  sweeper:
+    params:
+  output_subdir: .hydra

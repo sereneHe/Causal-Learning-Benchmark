@@ -1,2 +1,0 @@
-FDR,TPR,FPR,SHD,nnz,Precision,Recall,F-score,Method,RuntimeSeconds
-1.0,0.0,0.009389671361502348,45,2,0.0,0.0,0.0,ANM-NCPOLR,11.25976449996233

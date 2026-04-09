@@ -1,230 +1,188 @@
-# causality_project
+# Causal Learning Benchmark
 
-This project is a cleaned-up, runnable Python pipeline extracted from `scripts/SereneHE_gCastle_project.ipynb`.
+This project is a benchmark pipeline for causal discovery built around original acyclic generated Krebs-cycle datasets. It provides a unified benchmark covering 22 methods, together with dataset generation, evaluation metrics, heatmaps, and circle barplots.
 
 ## Overview
+The 22-method benchmark covers constraint-based, functional-model-based, score-based, and gradient-based causal discovery families, including `PC-Stable`, `PC-Parallel`, `ANM-NCPOLR`, `ANM-GPR`, `ANM-GPR-Kernel`, `Direct-LiNGAM`, `ICA-LiNGAM`, `PNL`, `GES`, `ExMAG`, `ExDBN`, `DyNotear`, `Notear-Linear`, `Notear-NonLinear`, `Notear-Lowrank`, `DAG-GNN`, `GOLEM`, `GraNDAG`, `MCSL`, `GAE`, `RL`, and `CORL`.
 
-- The notebook method set contains 22 methods:
-  `PC-Stable`, `PC-Parallel`, `ANM-NCPOLR`, `ANM-GPR`, `ANM-GPR-Kernel`,
-  `Direct-LiNGAM`, `ICA-LiNGAM`, `PNL`, `GES`, `ExMAG`, `ExDBN`, `DyNotear`,
-  `Notear-Linear`, `Notear-NonLinear`, `Notear-Lowrank`, `DAG-GNN`, `GOLEM`,
-  `GraNDAG`, `MCSL`, `GAE`, `RL`, `CORL`.
-- gCastle source is vendored under `scripts/methods/gcastle/` from commit
-  `f96c9b52d5e38c74c14969dbf6c48b380f3c3dab`.
-- Notebook-local external methods are vendored under
-  `scripts/methods/project_bestdagsolverintheworld/`.
-- Hydra is the main entrypoint format and MLflow is enabled by default.
+## Datasets
+The benchmark includes four Krebs-cycle dataset variants:
+
+| Dataset | N. features | Length | N. series | Initialisation | Concentrations |
+| --- | ---: | ---: | ---: | --- | --- |
+| KrebsN | 16 | 500 | 100 | Normal distribution | Absolute |
+| Krebs3 | 16 | 500 | 120 | Excitation of three | Relative |
+| KrebsL | 16 | 5000 | 10 | Normal distribution | Absolute |
+| KrebsS | 16 | 5 | 10000 | Normal distribution | Absolute |
+
+Temporal Krebs cycle generation:
+
+For causal discovery, we focus on an acyclic temporal view of the Krebs cycle rather than the standard cyclic textbook view. The difference is illustrated below:
+
+![Temporal Krebs cycle](docs/figures/Temporal-Kreb-cycle.png)
+
+## Visualisations
+Metrics include `F-score`, `SHD`, `SID` when provided, `FDR`, `TPR`, `FPR`, `nnz`, `Precision`, and `Recall`. 
+
+Dynotears heatmap example:
+
+![Dynotears heatmap](docs/figures/threes_dynotears.png)
+
+Krebs3 metric error barplot:
+
+![Krebs3 metric error barplot](docs/figures/Barplot_Krebs3_Metrics_Error.png)
+
+Krebs3 and normalised Krebs3 SID circle barplot:
+
+![Krebs3 and normalised Krebs3 SID circle barplot](docs/figures/CircleBarplot_Krebs3&NormalizedKrebs3_SID.png)
 
 ## Evaluation
 
 - Metrics include `F-score`, `SHD`, `SID` when provided, `FDR`, `TPR`, `FPR`, `nnz`, `Precision`, and `Recall`.
 - Heatmaps compare `est_graph` and `truth_graph`.
 
+## Requirements
+
+Install the required software first:
+
+```bash
+brew install openjdk
+```
+
+Install the Python base dependencies with:
+
+```bash
+pip install -r requirements/base.txt
+```
+
+Install the broader Python dependency set with:
+
+```bash
+pip install -r requirements/all.txt
+```
+
+Or use the unified summary file:
+
+```bash
+pip install -r requirements/requirements.txt
+```
+
+Optional method-specific dependencies are listed in:
+
+- `requirements/optional.txt`
+
+Java generator requirements are documented in:
+
+- `requirements/java.txt`
+
+If `openjdk` was installed with Homebrew, make sure your shell can find it:
+
+```bash
+export PATH="/usr/local/opt/openjdk/bin:$PATH"
+export JAVA_HOME="/usr/local/opt/openjdk/libexec/openjdk.jdk/Contents/Home"
+```
+
+Quick checks:
+
+```bash
+java -version
+javac -version
+python3 -m py_compile src/scripts/main.py src/scripts/run_pipeline.py src/scripts/plot/krebcycle_heatmap.py
+```
+
 ## Current Structure
 
 ```text
 .
 ├── README.md
-├── background_logs/
-├── conf/
-│   ├── config.yaml
-│   ├── config-cluster.yaml
-│   ├── problem/
-│   │   ├── krebs_cycle_1.yaml
-│   │   ├── krebs_cycle_3.yaml
-│   │   ├── krebs_cycle_normalised_1.yaml
-│   │   └── krebs_cycle_normalised_3.yaml
-│   ├── solver/
-│   │   ├── default.yaml
-│   │   ├── gcastle_all_17.yaml
-│   │   ├── lightweight.yaml
-│   │   ├── local_plus_corl.yaml
-│   │   └── notebook_all.yaml
-│   └── hydra/
-│       └── launcher/
-│           └── configured_submitit_slurm.yaml
+├── requirements/
+│   ├── base.txt
+│   ├── all.txt
+│   ├── optional.txt
+│   └── java.txt
+├── demo/
+│   └── SereneHE_gCastle_project.ipynb
+├── docs/
+│   └── figures/
 ├── data/
 │   ├── Krebs_Cycle_1_TS/
 │   ├── Krebs_Cycle_3_TS/
 │   ├── Krebs_Cycle_Normalised_1_TS/
 │   ├── Krebs_Cycle_Normalised_3_TS/
 │   └── true_graph.npz
+├── output/
+├── src/
+│   ├── conf/
+│   └── scripts/
+│       ├── main.py
+│       ├── run_pipeline.py
+│       ├── data_loader.py
+│       ├── experiments/
+│       ├── data_generator/
+│       ├── methods/
+│       ├── plot/
+│       └── utils/
+├── artifacts/
 ├── hydra_runs/
 ├── mlruns/
-├── output/
-│   ├── Results_Krebs_Cycle_1/
-│   └── __plot_smoke__/
-└── scripts/
-    ├── SereneHE_gCastle_project.ipynb
-    ├── main.py
-    ├── run_pipeline.py
-    ├── plot.py
-    ├── data_loader.py
-    ├── methods/
-    │   ├── method_runner.py
-    │   ├── post_processing.py
-    │   ├── gcastle/
-    │   └── project_bestdagsolverintheworld/
-    └── utils/
-        ├── mlflow_logger.py
-        └── timer.py
+└── background_logs/
 ```
 
-## Pipeline Layout
-
-The notebook logic is split into these runtime pieces:
-
-- `scripts/main.py`: Hydra entrypoint.
-- `scripts/run_pipeline.py`: dataset loading, method execution, timeout handling, metrics, and artifact writing.
-- `scripts/data_loader.py`: `Real_Data_Standardization`.
-- `scripts/methods/method_runner.py`: routes method names to wrappers.
-- `scripts/methods/post_processing.py`: score CSVs, merged outputs, and heatmaps.
-- `scripts/plot.py`: notebook-derived `circle_barplot`, `barplot`, and `heatmap` helpers.
-- `scripts/utils/mlflow_logger.py`: MLflow run and artifact logging.
-
-## Method Sources
-
-### gCastle wrappers
-
-Local wrappers in `scripts/methods/` expose vendored gCastle implementations for:
-
-- `PC-Stable`
-- `PC-Parallel`
-- `ANM-GPR`
-- `ANM-GPR-Kernel`
-- `Direct-LiNGAM`
-- `ICA-LiNGAM`
-- `PNL`
-- `GES`
-- `Notear-Linear`
-- `Notear-NonLinear`
-- `Notear-Lowrank`
-- `DAG-GNN`
-- `GOLEM`
-- `GraNDAG`
-- `MCSL`
-- `GAE`
-- `RL`
-- `CORL`
-
-### Notebook-local methods
-
-Project-local implementations or vendored external sources are used for:
-
-- `ANM-NCPOLR`
-- `ExMAG`
-- `ExDBN`
-- `DyNotear`
-
-`ExDAG` is also wired in `local_plus_corl`, but it is not part of the original 22-method `notebook_all` set.
-
-## Data Layout
-
-The loader accepts these forms under `paths.data_root`:
-
-- `<dataset>.npz` with `x` and `y`
-- `<dataset>.csv` with `true_graph.csv`
-- `<dataset>.tar.gz`
-- `<dataset>_TS/*.tsv` with `true_graph.npz`
-
-Typical local setup:
-
-- `conf/config.yaml` points `paths.data_root` to `/Users/xiaoyuhe/Downloads/KrebsCycle`
-- repo-local sample data also exists under `data/`
-
-## Hydra Usage
-
-Default run:
+## Running pipeline
+Generate the normalised Krebs3-style data with the default generator:
 
 ```bash
-cd /Users/xiaoyuhe/Causal-Methods/krebcycle
-python3 scripts/main.py
+cd <repo-root>/src/scripts/data_generator
+./run_data_generator.sh
 ```
-
-Run `Krebs_Cycle_3`:
-
-```bash
-python3 scripts/main.py problem=krebs_cycle_3
-```
-
-Run `Krebs_Cycle_Normalised_3`:
+Run a specific Java generator class:
 
 ```bash
-python3 scripts/main.py problem=krebs_cycle_normalised_3
-```
-
-Run the 17-method gCastle set:
-
-```bash
-python3 scripts/main.py solver=gcastle_all_17
-```
-
-Run all 22 notebook methods:
-
-```bash
-python3 scripts/main.py solver=notebook_all
-```
-
-Run notebook-local methods plus `CORL` and `ExDAG`:
-
-```bash
-python3 scripts/main.py solver=local_plus_corl
-```
-
-Use a custom subset:
-
-```bash
-python3 scripts/main.py \
-  'solver.methods=[PC-Stable,Direct-LiNGAM,ExDBN]' \
-  solver.time_limit=600
-```
-
-Use repo-local data instead of Downloads:
-
-```bash
-python3 scripts/main.py \
-  paths.data_root='${hydra:runtime.cwd}/data' \
-  mlflow.enabled=false
-```
-
-Multirun sweep:
-
-```bash
-python3 scripts/main.py -m \
-  problem=krebs_cycle_1,krebs_cycle_3 \
-  solver=lightweight \
-  mlflow.enabled=false
+cd <repo-root>/src/scripts/data_generator
+MAIN_CLASS=Main ./run_data_generator.sh
+MAIN_CLASS=LongSeries ./run_data_generator.sh
+MAIN_CLASS=ShortSeries ./run_data_generator.sh
+MAIN_CLASS=GroundTruthGraph ./run_data_generator.sh
+MAIN_CLASS=NonUniformPrior ./run_data_generator.sh
 ```
 
 Cluster config:
 
 ```bash
-python3 scripts/main.py --config-name config-cluster
+python3 src/scripts/main.py --config-name config-cluster
 ```
 
-## Outputs
+## Method Tests
 
-- Hydra run metadata: `hydra_runs/<dataset>/<timestamp>/`
-- MLflow tracking: `mlruns/`
-- Method outputs: `output/Results_<dataset>/`
-- Background process logs: `background_logs/`
+Quick single-method smoke tests:
 
-Inside each `Results_<dataset>/` folder:
+```bash
+cd <repo-root>
+python3 src/scripts/main.py problem=krebs_cycle_3 'solver.methods=[PC-Stable]' mlflow.enabled=false
+python3 src/scripts/main.py problem=krebs_cycle_3 'solver.methods=[Direct-LiNGAM]' mlflow.enabled=false
+python3 src/scripts/main.py problem=krebs_cycle_3 'solver.methods=[ExDBN]' mlflow.enabled=false
+```
 
-- `adj_matrices/`
-- `score/`
-- `heatmap/`
-- `merged_scores_<dataset>.csv`
-- `sid_<dataset>.csv` if available
-- `output_<dataset>.csv`
+Run the full 22-method benchmark:
 
-## Notes
+```bash
+cd <repo-root>
+python3 src/scripts/main.py problem=krebs_cycle_3 solver=notebook_all paths.data_root=<repo-root>/data
+python3 src/scripts/main.py problem=krebs_cycle_normalised_3 solver=notebook_all paths.data_root=<repo-root>/data
+```
 
-- `config.yaml` uses Hydra `joblib` locally.
-- `config-cluster.yaml` switches Hydra to `configured_submitit_slurm`.
-- MLflow is enabled by default. Disable it with `mlflow.enabled=false`.
-- `solver=notebook_all` is the notebook 22-method set.
-- `solver=local_plus_corl` is a project convenience set and includes `ExDAG`.
-- `ExMAG`, `ExDBN`, `ExDAG`, and `DyNotear` prefer the vendored copy under `scripts/methods/project_bestdagsolverintheworld/`.
-- `ExDAG` currently still needs the external `dagma` Python package at runtime.
-- There is no formal `pytest` suite in this project yet; validation is currently based on config expansion, import checks, `py_compile`, and smoke runs.
+Create a Dynotears-style heatmap from an estimated graph:
+
+```bash
+cd <repo-root>/src/scripts/experiments
+sh ./experiments_krebcycle_heatmap.sh
+```
+
+Or call the heatmap script directly:
+
+```bash
+python3 src/scripts/plot/krebcycle_heatmap.py \
+  --problem krebs_cycle_3 \
+  --data-root <repo-root>/data \
+  --graph-file <repo-root>/output/Results_Krebs_Cycle_3/adj_matrices/DyNotear_adj.csv
+```
