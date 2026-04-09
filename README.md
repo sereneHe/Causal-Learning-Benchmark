@@ -30,7 +30,7 @@ Metrics include `F-score`, `SHD`, `SID` when provided, `FDR`, `TPR`, `FPR`, `nnz
 
 Dynotears heatmap example:
 
-![Dynotears heatmap](docs/figures/threes_dynotears.png)
+<img src="docs/figures/threes_dynotears.png" alt="Dynotears heatmap" width="420">
 
 Krebs3 metric error barplot:
 
@@ -38,7 +38,7 @@ Krebs3 metric error barplot:
 
 Krebs3 and normalised Krebs3 SID circle barplot:
 
-![Krebs3 and normalised Krebs3 SID circle barplot](docs/figures/CircleBarplot_Krebs3&NormalizedKrebs3_SID.png)
+<img src="docs/figures/CircleBarplot_Krebs3&NormalizedKrebs3_SID.png" alt="Krebs3 and normalised Krebs3 SID circle barplot" width="520">
 
 ## Evaluation
 
