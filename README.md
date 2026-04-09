@@ -2,6 +2,10 @@
 
 This project is a benchmark pipeline for causal discovery built around original acyclic generated Krebs-cycle datasets. It provides a unified benchmark covering 22 methods, together with dataset generation, evaluation metrics, heatmaps, and circle barplots.
 
+Related paper:
+
+- [Causal Learning in Biomedical Applications: Krebs Cycle as a Benchmark](https://arxiv.org/html/2406.15189v3)
+
 ## Overview
 The 22-method benchmark covers constraint-based, functional-model-based, score-based, and gradient-based causal discovery families, including `PC-Stable`, `PC-Parallel`, `ANM-NCPOLR`, `ANM-GPR`, `ANM-GPR-Kernel`, `Direct-LiNGAM`, `ICA-LiNGAM`, `PNL`, `GES`, `ExMAG`, `ExDBN`, `DyNotear`, `Notear-Linear`, `Notear-NonLinear`, `Notear-Lowrank`, `DAG-GNN`, `GOLEM`, `GraNDAG`, `MCSL`, `GAE`, `RL`, and `CORL`.
 
@@ -49,31 +53,11 @@ Install the required software first:
 brew install openjdk
 ```
 
-Install the Python base dependencies with:
+Install the Python dependencies with:
 
 ```bash
-pip install -r requirements/base.txt
+pip install -r src/requirements.txt
 ```
-
-Install the broader Python dependency set with:
-
-```bash
-pip install -r requirements/all.txt
-```
-
-Or use the unified summary file:
-
-```bash
-pip install -r requirements/requirements.txt
-```
-
-Optional method-specific dependencies are listed in:
-
-- `requirements/optional.txt`
-
-Java generator requirements are documented in:
-
-- `requirements/java.txt`
 
 If `openjdk` was installed with Homebrew, make sure your shell can find it:
 
@@ -95,11 +79,6 @@ python3 -m py_compile src/scripts/main.py src/scripts/run_pipeline.py src/script
 ```text
 .
 ├── README.md
-├── requirements/
-│   ├── base.txt
-│   ├── all.txt
-│   ├── optional.txt
-│   └── java.txt
 ├── demo/
 │   └── SereneHE_gCastle_project.ipynb
 ├── docs/
@@ -110,9 +89,9 @@ python3 -m py_compile src/scripts/main.py src/scripts/run_pipeline.py src/script
 │   ├── Krebs_Cycle_Normalised_1_TS/
 │   ├── Krebs_Cycle_Normalised_3_TS/
 │   └── true_graph.npz
-├── output/
 ├── src/
 │   ├── conf/
+│   ├── requirements.txt
 │   └── scripts/
 │       ├── main.py
 │       ├── run_pipeline.py
@@ -122,10 +101,6 @@ python3 -m py_compile src/scripts/main.py src/scripts/run_pipeline.py src/script
 │       ├── methods/
 │       ├── plot/
 │       └── utils/
-├── artifacts/
-├── hydra_runs/
-├── mlruns/
-└── background_logs/
 ```
 
 ## Running pipeline
