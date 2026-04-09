@@ -38,7 +38,7 @@ Krebs3 metric error barplot:
 
 Krebs3 and normalised Krebs3 SID circle barplot:
 
-<img src="docs/figures/CircleBarplot_Krebs3&NormalizedKrebs3_SID.png" alt="Krebs3 and normalised Krebs3 SID circle barplot" width="620">
+![Krebs3 and normalised Krebs3 SID circle barplot](docs/figures/CircleBarplot_Krebs3&NormalizedKrebs3_SID.png)
 
 ## Evaluation
 
